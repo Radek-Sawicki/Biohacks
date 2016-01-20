@@ -1,7 +1,6 @@
-The program seems to be done now, if writing to stdout would be enough. 
-result_testdata confirms that the correct annotations get correct letters.
-•	The “all columns removed” error will do for empty file and empty seq cases too.
-•	Checked that extra empty lines after an MSA does not cause bugs.
-•	Changed “key” variable names to distinct ones (key, key2, key3) in columnremover to avoid risk of bugs. All controls and test still worked afterwards.
-•	Now columnremover prints out in fasta format to stdout!
+Treedistmetric.py is the new script for computing distance between phylo trees. 
+Work in hectic progress. Having trouble designing how the huge amounts of data files will be 
+read automatically but at the moment I see a light in the end of the tunnel. It might work
+using the command ">treedistmetric.py *.tree" in Unix, the script is designed for it as to date.
+
 
