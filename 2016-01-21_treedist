@@ -3,15 +3,15 @@ import sys
 import re
 import dendropy
 from dendropy.calculate import treecompare
+from collections import Counter
 
 distances=[]
-
 # establish common taxon namespace
 tns = dendropy.TaxonNamespace()
 # ensure all trees loaded use common namespace
-#reftree = dendropy.Tree.get(path="s001.align.1.msl.tree",schema='newick',taxon_namespace=tns)
 
 reference_tree=True
+gotreference=False
 for i in sys.argv[1:]:
     j = open(i,'r')
 
@@ -20,13 +20,21 @@ for i in sys.argv[1:]:
         match = re.search('<newick>(.+|\n)</newick>', line)
         if match and reference_tree==False:
             pretree= match.group(1)
+            gotreference=True
         elif match and reference_tree==True:
             refpretree=match.group(1)
             reftree = dendropy.Tree.get(data=refpretree,schema='newick',taxon_namespace=tns)
             reference_tree=False #from now on we dont need another reference tree
     j.close()
 #get() will automatically make data control as schema must be newick
-tree = dendropy.Tree.get(data=pretree,schema='newick',taxon_namespace=tns)
+    if gotreference==True:
+        tree = dendropy.Tree.get(data=pretree,schema='newick',taxon_namespace=tns)
 
-distances.append(treecompare.symmetric_difference(reftree, tree))
-print distances
+        distances.append(treecompare.symmetric_difference(reftree, tree))
+#print distances
+print 'there were %d distances calculated' %len(distances)
+c=Counter(distances)
+zeros=c[0]
+print 'out of them, %d were 0' %zeros
+print 'the percentage of getting back reference tree was %f' %((zeros+0.)/(len(distances)+0.))
+print 'something about root mean square?'
