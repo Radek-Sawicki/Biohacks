@@ -1,7 +1,13 @@
-The program seems to be done now, if writing to stdout would be enough. 
-result_testdata confirms that the correct annotations get correct letters.
-•	The “all columns removed” error will do for empty file and empty seq cases too.
-•	Checked that extra empty lines after an MSA does not cause bugs.
-•	Changed “key” variable names to distinct ones (key, key2, key3) in columnremover to avoid risk of bugs. All controls and test still worked afterwards.
-•	Now columnremover prints out in fasta format to stdout!
+Noisereducer now has proper data control and is finished! It gracefully handles:
+empty file: error all columns removed
+
+empty sequences: error all columns removed
+
+all columns removed: error all columns removed
+
+extra newlines between sequence lines or between sequence and name: nothing bad happens
+
+no arrow before a name: error corrupt data
+
+sequences containing anything else than aminoacid letters or hyphen: error corrupt data
 
