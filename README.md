@@ -1,5 +1,7 @@
-Treedistmetric.py is finished!It might work
-using the command ">treedistmetric.py *.tree" in Unix, the script is designed for it.
+Treedistmetric.py is almost finished! Perhaps just another line about rootmean-square 
+of the distances deviation from zero would be needed.
+
+The program might workusing the command ">treedistmetric.py *.tree" in Unix, the script is designed for it.
 
 Noisereducer now has proper data control and is finished! It gracefully handles:
 
