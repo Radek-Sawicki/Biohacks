@@ -1,0 +1,119 @@
+#!/usr/bin/env python
+
+import sys
+import re
+from collections import Counter
+
+def argreader():
+    '''This function opens an unlimited amount of textfiles and reads them
+    in order to store them into a list of lists ("listionary") before closing 
+    the files. The file names are provided in the terminal (argument vector) by 
+    the user as arguments nr. 1 and onward'''
+    listionary=[]
+    for i in sys.argv[1:]:
+            j = open(i,'r')
+            k = j.readlines()
+            listionary.append(k)
+            j.close()
+        #     sys.stderr.write('error at > '+i+' <only msl and fasta files accepted!')
+        #     sys.exit(1)
+
+    return listionary, i
+
+################# MERGING SEQUENCES and dictionarizing and bogus check ##################
+def dictionarizer(listionary,i):
+
+    name=''
+    seq=''
+    lencheck=[]
+    name_seq_dic= {}
+    count=0
+
+    for element in listionary:
+        for line in element:
+            count+=1 #first line checker
+            if '>' in line:
+                if count!=1: #only if not first line, there is a name and seq to unload
+                    match=re.search('^[AC-IK-NP-TVW-Y\-]*$',seq)
+                    if match:
+                        name_seq_dic[name]= list(seq) #first time (count=1), it would be empty key/value. This will
+                        #unload the seq and name into the dictionary
+                        lencheck.append(len(seq))
+                        name= line #collects the name
+                        seq='' #reset after having unloaded the seq to dictionary
+                    else:
+                        sys.stderr.write('error at > '+i+' <data file corrupted!')
+                        sys.exit(1)
+                else: #first time (count=1)just save the name
+                    name= line
+            else:
+                line=line.rstrip().upper()
+                seq+=line #collects (and merges) sequence until it hits a name again
+    match=re.search('^[AC-IK-NP-TVW-Y\-]*$',seq)
+    if match:
+        name_seq_dic[name]= list(seq) #one last unload is needed at the end.
+    else:
+        sys.stderr.write('error at > '+i+' <data file corrupted!')
+        sys.exit(1)
+    lencheck.append(len(seq))
+
+    lenerror=len(set(lencheck))!=1
+    if lenerror==True:
+        sys.stderr.write('error at > '+i+' <sequences are not of equal length!')
+        sys.exit(1)
+
+    howmany=len(seq) #this is candy for the next function
+    
+    return name_seq_dic, howmany #order must match later use
+    
+    
+
+###########################################################################
+def columnremover(name_seq_dic, howmany, i): 
+    bad=False #must start with false or else "bad" is unassigned
+    #print name_seq_dic
+    #print howmany
+    for x in range(howmany):
+        column=''
+        for key in name_seq_dic:
+            column+=name_seq_dic[key][x]
+        #print column
+        if (len(set(column))-1.)/(len(column)+0.)>=0.5: #if 50% or more are unique
+            bad=True
+        if (column.count('-')+0.)/(len(column)+0.)>=0.5: #if 50% or more are indels
+            bad=True
+
+        c=Counter(column) #counts how many times each char occurs
+        c['-'] = 0  #Having at least 3 '-' shouldnt count as an amino acid occurance
+        #print c
+        #print c.most_common(1)
+        if c.most_common(1)[0][1] <3:#picks out the int value of the most abundant letter
+            bad=True
+
+        if bad==True:
+            for key2 in name_seq_dic:
+                name_seq_dic[key2][x]='' #delete letter from seq list at pos x
+            bad=False #reset
+
+    for key3 in name_seq_dic:
+        name_seq_dic[key3]=''.join(name_seq_dic[key3]) #revert the lists into strings
+
+    if len(name_seq_dic[key3])==0:
+        sys.stderr.write('error at > '+i+' <all columns were removed!')
+        sys.exit(1)
+
+    for key4 in name_seq_dic:
+        print key4,
+        print name_seq_dic[key4]
+    return
+####################################################################################
+def filesaver():
+    pass
+    return
+################################# MAIN CODE ########################################
+
+listionary, i=argreader()
+
+name_seq_dic, howmany=dictionarizer(listionary, i) #name_seq_dic, howmany -order must match below
+
+columnremover(name_seq_dic, howmany, i) #name_seq_dic, howmany -order must match above
