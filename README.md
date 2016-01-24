@@ -1,5 +1,4 @@
-•	Found out that treedistmetric.py couldn’t read the reference trees because the regex was not matching it. This led to a significant renewal of the script which also made it more robust as I noticed that the regex wouldn’t have accepted newlines in any tree lines before.
-
-•	treedistmetric.py now computes the distances successfully against the reference trees. 
-
+treedistmetric.py just went through a major simplification. It doesnt use regex anymore.
+This is because I discovered a way to get data in pure newick format before giving it to 
+this program.
 
