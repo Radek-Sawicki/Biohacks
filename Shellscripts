@@ -1,0 +1,15 @@
+o	Always use the given .tree file as the reference (1st argument)
+
+o	Use fastprot + fnj on all the .msl files to get msl.tree files. Shellscript:
+for i in *.msl; do fastprot –i $i | fnj –O newick –o $i.tree; done
+
+o	Use treedistmetric on all the resulting .msl.tree files to get statistics.Shellscript:
+treedistmetric.py ref.tree *.msl.tree
+
+o	Use noisereducer + fastprot +fnj on all the .msl files to get .msl.red.tree files (reduced tree files). Shellscript:
+for I in *.msl; do noisereducer.py $i | fastprot | fnj  –O newick –o $i.red.tree; done
+
+o	Use treedistmetric on all the resulting .msl.red.tree files to get statistics. Shellscript:
+treedistmetric.py ref.tree *.msl.red.tree
+
+repeat for all folders
